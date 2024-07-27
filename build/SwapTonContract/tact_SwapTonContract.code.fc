@@ -1,0 +1,183 @@
+#pragma version =0.4.4;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_SwapTonContract.headers.fc";
+#include "tact_SwapTonContract.stdlib.fc";
+#include "tact_SwapTonContract.constants.fc";
+#include "tact_SwapTonContract.storage.fc";
+
+;;
+;; Contract SwapTonContract functions
+;;
+
+(slice, (slice, int, slice), (slice, int, slice)) $SwapTonContract$_contract_init() impure inline_ref {
+    var (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency))) = (null(), null(), null());
+    $self'deployer = __tact_context_get_sender();
+    ($self'client1'address, $self'client1'amount, $self'client1'currency) = $Client$_constructor_address_amount_currency(__tact_context_get_sender(), 0, __gen_slice_string_7f23a419b837f87cb02beed6e36d91ee847b2ebce01b9ef5a02df2baf4c081a1());
+    ($self'client2'address, $self'client2'amount, $self'client2'currency) = $Client$_constructor_address_amount_currency(__tact_context_get_sender(), 0, __gen_slice_string_7f23a419b837f87cb02beed6e36d91ee847b2ebce01b9ef5a02df2baf4c081a1());
+    return ($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency));
+}
+
+((slice, (slice, int, slice), (slice, int, slice)), ()) $SwapTonContract$_fun_Swap((slice, (slice, int, slice), (slice, int, slice)) $self, (slice, int, slice) $client1, (slice, int, slice) $client2) impure inline_ref {
+    var (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency))) = $self;
+    var (($client1'address, $client1'amount, $client1'currency)) = $client1;
+    var (($client2'address, $client2'amount, $client2'currency)) = $client2;
+    int $AmountForClient1 = ($client2'amount + 400000);
+    int $AmountForClient2 = ($client1'amount + 400000);
+    int $Commision = (((__tact_my_balance() - $AmountForClient1) - $AmountForClient2) - 20000000);
+    $global_send($SendParameters$_constructor_to_bounce_value_mode($client1'address, true, $AmountForClient1, 2));
+    $global_send($SendParameters$_constructor_to_bounce_value_mode($client2'address, true, $AmountForClient2, 2));
+    $global_send($SendParameters$_constructor_to_bounce_value_mode(__gen_slice_address_ad6ca21f706f0cf960c73517223e28759896805c10f7459ae87ec85d30cc4302(), true, $Commision, 2));
+    return (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)), ());
+}
+
+((slice, (slice, int, slice), (slice, int, slice)), slice) $SwapTonContract$_fun_info((slice, (slice, int, slice), (slice, int, slice)) $self) impure inline_ref {
+    var (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency))) = $self;
+    tuple $sb = __tact_string_builder_start_string();
+    $sb~__tact_string_builder_append(__gen_slice_string_f65f697c937ee0ba5b078b60a89da3299a7243a813edd76f8b8f5a2dc78fd7fe());
+    $sb~__tact_string_builder_append(__tact_int_to_string(__tact_my_balance()));
+    $sb~__tact_string_builder_append(__gen_slice_string_6d76978ebe73221a1375005160b6a811ed493dd71c0e4d8a7de9ec7517850ae3());
+    $sb~__tact_string_builder_append(__tact_int_to_string($self'client1'amount));
+    $sb~__tact_string_builder_append(__gen_slice_string_2018b20b3f4fe8d3753ac196b882028f702b1fb4c2fa3145f42022aed76ddd7e());
+    $sb~__tact_string_builder_append(__tact_int_to_string($self'client2'amount));
+    return (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)), __tact_string_builder_end_slice($sb));
+}
+
+;;
+;; Receivers of a Contract SwapTonContract
+;;
+
+(((slice, (slice, int, slice), (slice, int, slice))), ()) $SwapTonContract$_internal_binary_CreateOffer((slice, (slice, int, slice), (slice, int, slice)) $self, (slice, int, slice) $msg) impure inline {
+    var ($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)) = $self;
+    var ($msg'addressClient1, $msg'amountTon, $msg'offerCurrency) = $msg;
+    $self'client1'address = $msg'addressClient1;
+    $self'client1'amount = $msg'amountTon;
+    $self'client2'currency = $msg'offerCurrency;
+    __tact_debug_str(__gen_slice_string_cf958395628b766c3c6672a43f676877f96770fd5f72b5b770c8aae87d2728d5(), "[DEBUG] File contracts/swap_ton_contract.tact:46:9");
+    return (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)), ());
+}
+
+(((slice, (slice, int, slice), (slice, int, slice))), ()) $SwapTonContract$_internal_binary_Swap((slice, (slice, int, slice), (slice, int, slice)) $self, (slice, int, slice) $msg) impure inline {
+    var ($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)) = $self;
+    var ($msg'addressClient2, $msg'amountTon, $msg'swapCurrency) = $msg;
+    $self'client2'address = $msg'addressClient2;
+    $self'client2'amount = $msg'amountTon;
+    $self'client2'currency = $msg'swapCurrency;
+    ($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency))~$SwapTonContract$_fun_Swap(($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency));
+    __tact_debug_str(__gen_slice_string_cf958395628b766c3c6672a43f676877f96770fd5f72b5b770c8aae87d2728d5(), "[DEBUG] File contracts/swap_ton_contract.tact:57:9");
+    return (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)), ());
+}
+
+(((slice, (slice, int, slice), (slice, int, slice))), ()) $SwapTonContract$_internal_binary_Claim((slice, (slice, int, slice), (slice, int, slice)) $self, (int) $msg) impure inline {
+    var ($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)) = $self;
+    var ($msg'secureCode) = $msg;
+    $global_send($SendParameters$_constructor_to_bounce_value_mode($self'client1'address, true, ($self'client1'amount + 400000), 2));
+    return (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)), ());
+}
+
+(((slice, (slice, int, slice), (slice, int, slice))), ()) $SwapTonContract$_internal_binary_Deploy((slice, (slice, int, slice), (slice, int, slice)) $self, (int) $deploy) impure inline {
+    var ($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)) = $self;
+    var ($deploy'queryId) = $deploy;
+    ($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency))~$SwapTonContract$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId)));
+    return (($self'deployer, ($self'client1'address, $self'client1'amount, $self'client1'currency), ($self'client2'address, $self'client2'amount, $self'client2'currency)), ());
+}
+
+;;
+;; Get methods of a Contract SwapTonContract
+;;
+
+_ %info() method_id(71178) {
+    var self = $SwapTonContract$_contract_load();
+    var res = self~$SwapTonContract$_fun_info();
+    return res;
+}
+
+_ supported_interfaces() method_id {
+    return (
+        "org.ton.introspection.v0"H >> 128,
+        "org.ton.abi.ipfs.v0"H >> 128,
+        "org.ton.deploy.lazy.v0"H >> 128,
+        "org.ton.debug.v0"H >> 128,
+        "org.ton.chain.workchain.v0"H >> 128
+    );
+}
+
+_ get_abi_ipfs() method_id {
+    return "ipfs://QmfJtdT3PQ3dAGK5ARh84hQzLVmuwFKidTm2MMTpit7vs4";
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract SwapTonContract
+;;
+
+((slice, (slice, int, slice), (slice, int, slice)), int) $SwapTonContract$_contract_router_internal((slice, (slice, int, slice), (slice, int, slice)) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive CreateOffer message
+    if (op == 284315249) {
+        var msg = in_msg~$CreateOffer$_load();
+        self~$SwapTonContract$_internal_binary_CreateOffer(msg);
+        return (self, true);
+    }
+    
+    ;; Receive Swap message
+    if (op == 3210656206) {
+        var msg = in_msg~$Swap$_load();
+        self~$SwapTonContract$_internal_binary_Swap(msg);
+        return (self, true);
+    }
+    
+    ;; Receive Claim message
+    if (op == 1600373520) {
+        var msg = in_msg~$Claim$_load();
+        self~$SwapTonContract$_internal_binary_Claim(msg);
+        return (self, true);
+    }
+    
+    ;; Receive Deploy message
+    if (op == 2490013878) {
+        var msg = in_msg~$Deploy$_load();
+        self~$SwapTonContract$_internal_binary_Deploy(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $SwapTonContract$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$SwapTonContract$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $SwapTonContract$_contract_store(self);
+}

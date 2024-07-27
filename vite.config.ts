@@ -24,5 +24,6 @@ export default defineConfig({
         })
       ]
     }
-  }
+  },
+  base: "/test-twa-app-3/"
 })

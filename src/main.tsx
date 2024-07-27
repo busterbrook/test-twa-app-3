@@ -4,7 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import {TonConnectUIProvider} from '@tonconnect/ui-react'
 
-const manifesstUrl = "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json";
+const manifesstUrl = "https://busterbrook.github.io/test-twa-app-3/manifest-tonconnect.json";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <TonConnectUIProvider manifestUrl={manifesstUrl}>
